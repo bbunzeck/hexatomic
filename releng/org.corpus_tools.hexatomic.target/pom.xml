@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
@@ -8,4 +9,60 @@
     </parent>
     <artifactId>org.corpus_tools.hexatomic.target</artifactId>
     <packaging>eclipse-target-definition</packaging>
+
+    <properties>
+        <platform-version-name>2019-12</platform-version-name>
+        <targetPlatform.repository.p2>http://download.eclipse.org/cbi/tpd/3.0.0-SNAPSHOT/</targetPlatform.repository.p2>
+        <targetPlatform.application.name>org.eclipse.cbi.targetplatform.tpd.converter</targetPlatform.application.name>
+        <targetPlatform.application.args>org.corpus_tools.hexatomic.target.tpd</targetPlatform.application.args>
+        <targetPlatform.application.feature>org.eclipse.cbi.targetplatform-feature</targetPlatform.application.feature>
+    </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.eclipse.tycho.extras</groupId>
+                <artifactId>tycho-eclipserun-plugin</artifactId>
+                <version>${tycho.version}</version>
+                <configuration>
+                    <repositories>
+                        <repository>
+                            <id>${platform-version-name}</id>
+                            <layout>p2</layout>
+                            <url>http://download.eclipse.org/releases/${platform-version-name}</url>
+                        </repository>
+                        <repository>
+                            <id>targetplatform</id>
+                            <layout>p2</layout>
+                            <url>${targetPlatform.repository.p2}</url>
+                        </repository>
+                    </repositories>
+                    <appArgLine>-consoleLog -application
+                        ${targetPlatform.application.name}
+                        ${targetPlatform.application.args}</appArgLine>
+                    <!-- Set dependencies to launch the application -->
+                    <dependencies>
+                        <dependency>
+                            <artifactId>${targetPlatform.application.feature}</artifactId>
+                            <type>eclipse-feature</type>
+                        </dependency>
+                        <dependency>
+                            <artifactId>org.eclipse.equinox.p2.sdk</artifactId>
+                            <type>eclipse-feature</type>
+                        </dependency>
+                    </dependencies>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>eclipse-run</goal>
+                        </goals>
+                        <!-- The phase validate rebuild the target platform 
+                            before to compile/test... -->
+                        <phase>validate</phase>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>
